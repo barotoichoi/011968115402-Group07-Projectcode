@@ -9,7 +9,7 @@ class CSVFormatError(Exception):
     pass
 
 
-def load_csv(file_path="input.csv"):
+def load_csv(file_path="input/input.csv"):
     if not os.path.exists(file_path):
         raise FileNotFoundError(f"File not found: {file_path}")
 
