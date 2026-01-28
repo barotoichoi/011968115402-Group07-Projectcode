@@ -1,55 +1,58 @@
 import os
-print("Current working directory:", os.getcwd())
-from csv_loader import load_csv, CSVFormatError
+
 from deadlock_core import DeadlockCore
+from csv_loader import load_csv
+from visualization import DeadlockVisualizer
 
 
 def main():
+    # In thư mục hiện tại (rất hữu ích khi debug đường dẫn CSV)
+    print("Current working directory:", os.getcwd())
+
+    # 1. Khởi tạo core
     core = DeadlockCore()
 
+    # 2. Load dữ liệu từ CSV
     try:
         operations = load_csv("input/input.csv")
-    except (FileNotFoundError, CSVFormatError) as e:
+    except Exception as e:
         print("CSV ERROR:", e)
         return
 
-    print("=== Loading operations from CSV ===")
-
+    # 3. Xử lý từng dòng trong CSV
     for op in operations:
         process = op["process"]
         action = op["action"]
         resource = op["resource"]
 
-        # Tạo process & resource nếu chưa tồn tại
+        # Tạo process / resource nếu chưa tồn tại
         if process not in core.processes:
             core.create_process(process)
 
         if resource not in core.resources:
             core.create_resource(resource)
 
-        # Xử lý action
-        if action == "hold":
-            core.request_resource(process, resource)
-
-        elif action == "request":
+        # Thực hiện hành động
+        if action == "request":
             core.request_resource(process, resource)
 
         elif action == "release":
-            res = core.resources[resource]
-            proc = core.processes[process]
+            core.release_resource(process, resource)
 
-            if res in proc.holding:
-                proc.holding.remove(res)
-                res.allocated_to = None
-                print(f"{process} released {resource}")
-            else:
-                print(f"{process} cannot release {resource} (not holding)")
+        elif action == "hold":
+            # hold có thể xem như request (tuỳ thiết kế)
+            core.request_resource(process, resource)
 
+    # 4. Kiểm tra deadlock
     print("\n=== Checking deadlock ===")
     if core.detect_deadlock():
         print("DEADLOCK DETECTED!")
     else:
-        print("No deadlock detected.")
+        print("No deadlock.")
+
+    # 5. Chạy GUI minh họa
+    visualizer = DeadlockVisualizer(core)
+    visualizer.run()
 
 
 if __name__ == "__main__":
