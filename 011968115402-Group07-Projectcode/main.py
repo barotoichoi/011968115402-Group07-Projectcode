@@ -3,7 +3,7 @@ import os
 from deadlock_core import DeadlockCore
 from csv_loader import load_csv
 from visualization import DeadlockVisualizer
-
+from csv_export import CSVLogger
 
 def main():
     # In thư mục hiện tại (rất hữu ích khi debug đường dẫn CSV)
@@ -11,7 +11,7 @@ def main():
 
     # 1. Khởi tạo core
     core = DeadlockCore()
-
+    logger = CSVLogger(core)
     # 2. Load dữ liệu từ CSV
     try:
         operations = load_csv("input/input.csv")
@@ -42,7 +42,7 @@ def main():
         elif action == "hold":
             # hold có thể xem như request (tuỳ thiết kế)
             core.request_resource(process, resource)
-
+        logger.log_step(process, action, resource)
     # 4. Kiểm tra deadlock
     print("\n=== Checking deadlock ===")
     if core.detect_deadlock():

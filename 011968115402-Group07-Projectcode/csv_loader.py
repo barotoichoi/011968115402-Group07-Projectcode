@@ -10,6 +10,11 @@ class CSVFormatError(Exception):
 
 
 def load_csv(file_path="input/input.csv"):
+    # If file_path is relative, resolve it relative to this script's directory
+    if not os.path.isabs(file_path):
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        file_path = os.path.join(script_dir, file_path)
+    
     if not os.path.exists(file_path):
         raise FileNotFoundError(f"File not found: {file_path}")
 
