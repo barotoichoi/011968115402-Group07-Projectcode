@@ -17,7 +17,7 @@ class DeadlockVisualizer:
         self._refresh_views()
 
     def _build_ui(self):
-        # ===== MAIN FRAMES =====
+        
         main_frame = ttk.Frame(self.root, padding=10)
         main_frame.pack(fill=tk.BOTH, expand=True)
 
@@ -27,19 +27,19 @@ class DeadlockVisualizer:
         right_frame = ttk.Frame(main_frame)
         right_frame.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True)
 
-        # ===== PROCESS VIEW =====
+        
         ttk.Label(left_frame, text="Processes", font=("Arial", 12, "bold")).pack(anchor=tk.W)
 
         self.process_list = tk.Listbox(left_frame, height=12)
         self.process_list.pack(fill=tk.BOTH, expand=True, pady=5)
 
-        # ===== RESOURCE VIEW =====
+      
         ttk.Label(left_frame, text="Resources", font=("Arial", 12, "bold")).pack(anchor=tk.W)
 
         self.resource_list = tk.Listbox(left_frame, height=12)
         self.resource_list.pack(fill=tk.BOTH, expand=True, pady=5)
 
-        # ===== DEADLOCK PANEL =====
+        
         ttk.Label(right_frame, text="Deadlock Status", font=("Arial", 12, "bold")).pack(anchor=tk.W)
 
         self.deadlock_text = tk.Text(
@@ -64,7 +64,7 @@ class DeadlockVisualizer:
         )
         refresh_btn.pack()
 
-    # ===== UPDATE UI =====
+    
     def _refresh_views(self):
         self.process_list.delete(0, tk.END)
         self.resource_list.delete(0, tk.END)
@@ -131,7 +131,7 @@ def _apply_operations(core, operations):
         action = op["action"]
         resource = op["resource"]
 
-        # ensure existence
+        
         if process not in core.processes:
             core.create_process(process)
         if resource not in core.resources:
@@ -140,21 +140,21 @@ def _apply_operations(core, operations):
         if action in ("request", "hold"):
             core.request_resource(process, resource)
         elif action == "release":
-            # perform release without relying on core.release_resource
+           
             r = core.resources[resource]
             p = core.processes[process]
             if r in p.holding:
                 p.holding.remove(r)
             if r.allocated_to == p:
                 r.allocated_to = None
-            # clear waiting_for for any processes waiting for this resource
+           
             for proc in core.processes.values():
                 if proc.waiting_for == r:
                     proc.waiting_for = None
 
 
 if __name__ == "__main__":
-    # Run standalone GUI using input CSV
+   
     core = DeadlockCore()
     try:
         ops = load_csv("input/input.csv")
