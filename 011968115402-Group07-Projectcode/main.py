@@ -2,6 +2,7 @@ import os
 
 from deadlock_core import DeadlockCore
 from csv_loader import load_csv
+from deadlock_detector import DeadlockDetector
 from visualization import DeadlockVisualizer
 from csv_export import CSVLogger
 
@@ -45,8 +46,12 @@ def main():
         logger.log_step(process, action, resource)
     # 4. Kiểm tra deadlock
     print("\n=== Checking deadlock ===")
-    if core.detect_deadlock():
+    detector = DeadlockDetector(core)
+    has_deadlock, processes = detector.detect_deadlock()
+    
+    if has_deadlock:
         print("DEADLOCK DETECTED!")
+        print("Processes in deadlock:", processes)
     else:
         print("No deadlock.")
 
