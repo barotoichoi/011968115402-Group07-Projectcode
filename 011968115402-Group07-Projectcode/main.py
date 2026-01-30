@@ -3,7 +3,8 @@ import os
 from deadlock_core import DeadlockCore
 from csv_loader import load_csv
 from deadlock_detector import DeadlockDetector
-from visualization import DeadlockVisualizer
+from GUI import DeadlockVisualizer
+from visualization import DeadlockVisualizer as DeadlockVisualizer_Graph
 from csv_export import CSVLogger
 
 def main():
@@ -55,9 +56,16 @@ def main():
     else:
         print("No deadlock.")
 
-    # 5. Chạy GUI minh họa
+    # 5. Chạy GUI minh họa trước
+    print("\n=== Running GUI ===")
     visualizer = DeadlockVisualizer(core)
     visualizer.run()
+    
+    # 6. Sau đó chạy visualization
+    print("\n=== Running Visualization ===")
+    visualizer_graph = DeadlockVisualizer_Graph(core)
+    visualizer_graph.draw()
+    visualizer_graph.window.mainloop()
 
 
 if __name__ == "__main__":

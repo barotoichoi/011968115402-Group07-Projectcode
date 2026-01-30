@@ -41,6 +41,35 @@ class DeadlockCore:
             process.waiting_for = resource
             print(f"{process.name} is waiting for {resource.name}")
 
+    def release_resource(self, process_name, resource_name):
+        """Release a resource from a process and clear waiting state for others."""
+        process = self.processes.get(process_name)
+        resource = self.resources.get(resource_name)
+        if not process or not resource:
+            return
+
+        if resource in process.holding:
+            process.holding.remove(resource)
+
+        if resource.allocated_to == process:
+            resource.allocated_to = None
+
+        # clear waiting_for for any processes waiting for this resource
+        for proc in self.processes.values():
+            if proc.waiting_for == resource:
+                proc.waiting_for = None
+
+    def detect_deadlock(self):
+        """Return list of processes in a deadlock cycle, or empty list if none."""
+        try:
+            from deadlock_detector import DeadlockDetector
+        except Exception:
+            return []
+
+        detector = DeadlockDetector(self)
+        has_deadlock, processes = detector.detect_deadlock()
+        return processes if has_deadlock else []
+
     def show_state(self):
         print("\n PROCESS STATE ")
         for p in self.processes.values():

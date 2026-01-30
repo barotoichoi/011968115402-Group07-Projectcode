@@ -1,1 +1,7 @@
 Step,Process,Action,Resource,Holding,Waiting_For,Deadlock
+1,P1,request,R1,R1,None,No
+2,P2,request,R2,R2,None,No
+3,P1,hold,R1,R1,R1,P1
+4,P2,hold,R2,R2,R2,P1
+5,P1,request,R2,R1,R2,P1 -> P2
+6,P2,request,R1,R2,R1,P1 -> P2
