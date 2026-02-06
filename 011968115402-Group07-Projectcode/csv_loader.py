@@ -24,21 +24,24 @@ def load_csv(file_path="input/input.csv"):
         reader = csv.DictReader(csvfile)
 
         # Validate CSV header
-        if not REQUIRED_COLUMNS.issubset(reader.fieldnames):
+        if not REQUIRED_COLUMNS.issubset(reader.fieldnames or set()):
             raise CSVFormatError(
                 f"CSV is missing required columns. Required: {REQUIRED_COLUMNS}"
             )
 
         # Read and validate each row
         for line_num, row in enumerate(reader, start=2):
+            # Skip empty rows or rows with None values
+            if not row or not row.get("process") or not row.get("action") or not row.get("resource"):
+                continue
+            
             process = row["process"].strip()
             action = row["action"].strip().lower()
             resource = row["resource"].strip()
 
-            if not process or not resource:
-                raise CSVFormatError(
-                    f"Line {line_num}: process or resource is empty"
-                )
+            # Skip empty values and comments
+            if not process or not resource or process.startswith("#"):
+                continue
 
             if action not in VALID_ACTIONS:
                 raise CSVFormatError(
